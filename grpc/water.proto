@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package water;
+option java_multiple_files = false;
+option java_package = "com.water";
+option java_outer_classname = "WaterOuterClass";
+
+// 单条传感器数据
+message WaterSensorData {
+    int64 id = 1;
+    string timestamp = 2;
+
+    double inflow_rate2 = 3;
+    double inflow_cod = 4;
+    double inflow_nh3 = 5;
+
+    double outflow_cod = 6;
+    double outflow_nh3 = 7;
+
+    double bio2_front_aeration_flow_meas = 8;
+    double bio2_front_valve_opening_meas = 9;
+    double bio2_end_aeration_flow_meas = 10;
+    double bio2_end_valve_opening_meas = 11;
+
+    double bio2_front_do_meas = 12;
+    double bio2_end_do_meas = 13;
+    double bio2_mlss_meas = 14;
+    double bio2_aeration_pipe_pressure_meas = 15;
+
+    double bio2_1_blower_opening_meas = 16;
+    int32  bio2_1_blower_is_running = 17;
+    double bio2_1_blower_pressure_meas = 18;
+
+    double bio2_2_blower_opening_meas = 19;
+    int32  bio2_2_blower_is_running = 20;
+    double bio2_2_blower_pressure_meas = 21;
+}
+
+// 训练请求
+message TrainRequest {
+    repeated WaterSensorData data_list = 1;
+}
+
+// 训练响应
+message TrainResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// 训练服务
+service WaterTrainService {
+    rpc Train(TrainRequest) returns (TrainResponse);
+}
