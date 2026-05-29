@@ -45,6 +45,10 @@ message TrainRequest {
 message TrainResponse {
     bool success = 1;
     string message = 2;
+    string model_name = 3;
+    string model_path = 4;
+    string scaler_path = 5;
+    string config_path = 6;
 }
 
 // 训练服务
