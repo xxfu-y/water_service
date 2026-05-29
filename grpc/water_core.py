@@ -184,13 +184,23 @@ def train_model(df):
         print(f"✅ {target_col} 训练完成！")
         # ======================================
 
-    joblib.dump(scaler, "scaler.pkl")
-    joblib.dump(model_dict, "models.pkl")
+    # 最后保存模型，返回路径
+    model_name = f"model_{pd.Timestamp.now().strftime('%Y%m%d%H%M%S')}"
+    model_dir = "./models/"
+    import os
+    os.makedirs(model_dir, exist_ok=True)
+
+    scaler_path = f"{model_dir}{model_name}_scaler.pkl"
+    model_path = f"{model_dir}{model_name}_models.pkl"
+    config_path = f"{model_dir}{model_name}_config.pkl"
+
+    joblib.dump(scaler, scaler_path)
+    joblib.dump(model_dict, model_path)
     joblib.dump({
         "sample_interval_min": sample_interval_min,
         "selected_feat": selected_feat,
         "target_map": target_map
-    }, "model_config.pkl")
+    }, config_path)
 
     # ======================================
     print("\n🎉 所有模型训练完成！已保存到文件")
@@ -198,6 +208,12 @@ def train_model(df):
     print("📄 models.pkl")
     print("📄 model_config.pkl\n")
     # ======================================
+    return {
+        "model_name": model_name,
+        "model_path": model_path,
+        "scaler_path": scaler_path,
+        "config_path": config_path
+    }
 
 # ====================== 预测 ======================
 def predict_model(df):
