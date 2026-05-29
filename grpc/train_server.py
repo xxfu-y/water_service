@@ -52,10 +52,10 @@ class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
         return water_pb2.TrainResponse(
             success=True,
             message="训练完成",
-            model_name=model_result["model_name"], 
-            model_path=model_result["model_path"],  
-            scaler_path=model_result["scaler_path"], 
-            config_path=model_result["config_path"] 
+            model_name=model_result["model_name"],
+            model_path=model_result["model_path"],
+            scaler_path=model_result["scaler_path"],
+            config_path=model_result["config_path"]
         )
 
 
