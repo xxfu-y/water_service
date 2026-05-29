@@ -46,10 +46,17 @@ class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
         print("DF",rows)
         df = pd.DataFrame(rows)
         print("✅ 开始训练模型...")
-        water_core.train_model(df)
+        model_result = water_core.train_model(df)
 
         print("✅ 训练完成！返回 Java")
-        return water_pb2.TrainResponse(success=True, message="训练完成，模型已保存")
+        return water_pb2.TrainResponse(
+            success=True,
+            message="训练完成",
+            model_name=model_result["model_name"], 
+            model_path=model_result["model_path"],  
+            scaler_path=model_result["scaler_path"], 
+            config_path=model_result["config_path"] 
+        )
 
 
 def serve():
