@@ -46,16 +46,38 @@ class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
         print("DF",rows)
         df = pd.DataFrame(rows)
         print("✅ 开始训练模型...")
-        model_result = water_core.train_model(df)
+        
+        # 获取 gRPC 传入的参数
+        predict_steps = request.predict_steps if request.predict_steps > 0 else 8  # 默认8小时
+        train_steps = request.train_steps if request.train_steps > 0 else None
+        model_type = request.model_type if request.model_type else "CatBoost"
+        
+        print(f"📊 预测步长: {predict_steps} 小时")
+        print(f"📊 训练步长: {train_steps}")
+        print(f"📊 模型类型: {model_type}")
+        
+        model_result = water_core.train_model(df, predict_steps=predict_steps)
 
         print("✅ 训练完成！返回 Java")
+        
+        # 构建 metrics map
+        metrics_map = {}
+        if "metrics" in model_result:
+            for target_col, metric_data in model_result["metrics"].items():
+                metrics_map[target_col] = water_pb2.ModelMetrics(
+                    rmse=metric_data["rmse"],
+                    mae=metric_data["mae"],
+                    r2=metric_data["r2"]
+                )
+        
         return water_pb2.TrainResponse(
             success=True,
             message="训练完成",
             model_name=model_result["model_name"],
             model_path=model_result["model_path"],
             scaler_path=model_result["scaler_path"],
-            config_path=model_result["config_path"]
+            config_path=model_result["config_path"],
+            metrics=metrics_map
         )
 
 

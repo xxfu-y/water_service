@@ -5,10 +5,10 @@ from catboost import CatBoostRegressor
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 SEED = 42
 
-# ====================== 【完全匹配你的工艺】 ======================
 DV_CONFIG = {
     "inflow_cod": -4.5,
     "inflow_nh3": -4.5,
@@ -27,10 +27,12 @@ CV_CONFIG = {
     "outflow_nh3": 8.0
 }
 
+
 def hours_to_steps(hours, sample_interval_min):
     return int(round(hours * 60 / sample_interval_min))
 
-# ====================== 特征工程（使用真实字段） ======================
+
+# ====================== 特征工程 ======================
 def build_features(df_input, sample_interval_min):
     df = df_input.copy()
     dff = df.copy()
@@ -82,6 +84,7 @@ def build_features(df_input, sample_interval_min):
 
     return dff
 
+
 def clean_data(df):
     df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
     df = df.sort_values("timestamp").drop_duplicates("timestamp").reset_index(drop=True)
@@ -90,28 +93,36 @@ def clean_data(df):
         m = df[c].mean()
         s = df[c].std()
         if s > 0:
-            df[c] = df[c].clip(m - 3*s, m + 3*s)
+            df[c] = df[c].clip(m - 3 * s, m + 3 * s)
     df[numeric_cols] = df[numeric_cols].interpolate(limit=10).ffill().bfill()
     return df
 
+
 # ====================== 训练模型 ======================
-def train_model(df):
+def train_model(df, predict_steps=8):
+    """
+    训练模型
+    :param df: 数据DataFrame
+    :param predict_steps: 预测步长（小时），默认8小时
+    :return: 模型信息字典
+    """
     # ======================================
-    print("📌 开始训练模型...")
-    print(f"📊 原始数据条数：{len(df)}")
+    print("开始训练模型...")
+    print(f"原始数据条数：{len(df)}")
+    print(f"预测步长：{predict_steps} 小时")
     # ======================================
 
     df = clean_data(df)
 
     # ======================================
-    print(f"✅ 数据清洗完成，剩余：{len(df)} 条")
+    print(f"数据清洗完成，剩余：{len(df)} 条")
     # ======================================
 
     time_diff = df["timestamp"].diff().dropna()
     sample_interval_min = time_diff.dt.total_seconds().median() / 60
 
     # ======================================
-    print(f"⏱ 采样间隔：{sample_interval_min:.2f} 分钟")
+    print(f"采样间隔：{sample_interval_min:.2f} 分钟")
     # ======================================
 
     df_feat = build_features(df, sample_interval_min)
@@ -126,7 +137,7 @@ def train_model(df):
     df_feat = df_feat.dropna().reset_index(drop=True)
 
     # ======================================
-    print(f"📦 特征工程完成，特征数据量：{df_feat.shape}")
+    print(f"特征工程完成，特征数据量：{df_feat.shape}")
     # ======================================
 
     feat_cols = [c for c in df_feat.columns if c not in ["timestamp", "id"] + list(target_map.values())]
@@ -135,19 +146,21 @@ def train_model(df):
     train = int(0.7 * n)
     val = int(0.15 * n)
     df_train = df_feat.iloc[:train]
-    df_val = df_feat.iloc[train:train+val]
+    df_val = df_feat.iloc[train:train + val]
+    df_test = df_feat.iloc[train + val:]
 
     # ======================================
-    print(f"📚 训练集：{len(df_train)} 条 | 验证集：{len(df_val)} 条")
+    print(f"训练集：{len(df_train)} 条 | 验证集：{len(df_val)} 条 | 测试集：{len(df_test)} 条")
     # ======================================
 
     scaler = RobustScaler()
     model_dict = {}
     selected_feat = {}
+    metrics_dict = {}
 
     for target_col, target_name in target_map.items():
         # ======================================
-        print(f"\n🚀 开始训练目标：{target_col}")
+        print(f"\n开始训练目标：{target_col}")
         # ======================================
 
         y_train = df_train[target_name].values
@@ -159,7 +172,7 @@ def train_model(df):
         selected = [feat_cols[i] for i in range(len(feat_cols)) if selector.get_support()[i]]
 
         # ======================================
-        print(f"✅ 特征选择完成，选中 {len(selected)} 个特征")
+        print(f"特征选择完成，选中 {len(selected)} 个特征")
         # ======================================
 
         X_train = df_train[selected].values
@@ -170,7 +183,7 @@ def train_model(df):
         tscv = TimeSeriesSplit(3)
         grid = GridSearchCV(
             CatBoostRegressor(random_state=SEED, verbose=0),
-            {"max_depth": [3,4,5], "learning_rate": [0.04,0.06], "n_estimators": [200,300]},
+            {"max_depth": [3, 4, 5], "learning_rate": [0.04, 0.06], "n_estimators": [200, 300]},
             cv=tscv
         )
         grid.fit(X_train_s, y_train)
@@ -180,40 +193,62 @@ def train_model(df):
         model_dict[target_col] = model
         selected_feat[target_col] = selected
 
+        # 在测试集上评估模型
+        y_test = df_test[target_name].values
+        X_test = df_test[selected].values
+        X_test_s = scaler.transform(X_test)
+        y_pred = model.predict(X_test_s)
+
+        rmse = float(np.sqrt(mean_squared_error(y_test, y_pred)))
+        mae = float(mean_absolute_error(y_test, y_pred))
+        r2 = float(r2_score(y_test, y_pred))
+
+        metrics_dict[target_col] = {
+            "rmse": rmse,
+            "mae": mae,
+            "r2": r2
+        }
+
         # ======================================
-        print(f"✅ {target_col} 训练完成！")
+        print(f"{target_col} 训练完成！")
+        print(f"测试集指标 - RMSE: {rmse:.4f}, MAE: {mae:.4f}, R²: {r2:.4f}")
         # ======================================
 
     # 最后保存模型，返回路径
     model_name = f"model_{pd.Timestamp.now().strftime('%Y%m%d%H%M%S')}"
-    model_dir = "./models/"
     import os
+
+    # 创建以模型名字命名的文件夹
+    model_dir = os.path.join("models", model_name)
     os.makedirs(model_dir, exist_ok=True)
 
-    scaler_path = f"{model_dir}{model_name}_scaler.pkl"
-    model_path = f"{model_dir}{model_name}_models.pkl"
-    config_path = f"{model_dir}{model_name}_config.pkl"
+    scaler_path = os.path.join(model_dir, "scaler.pkl")
+    model_path_file = os.path.join(model_dir, "models.pkl")
+    config_path = os.path.join(model_dir, "config.pkl")
 
     joblib.dump(scaler, scaler_path)
-    joblib.dump(model_dict, model_path)
+    joblib.dump(model_dict, model_path_file)
     joblib.dump({
         "sample_interval_min": sample_interval_min,
         "selected_feat": selected_feat,
-        "target_map": target_map
+        "target_map": target_map,
+        "metrics": metrics_dict
     }, config_path)
 
     # ======================================
-    print("\n🎉 所有模型训练完成！已保存到文件")
-    print("📄 scaler.pkl")
-    print("📄 models.pkl")
-    print("📄 model_config.pkl\n")
+    print(f"\n所有模型训练完成！已保存到文件夹: {model_dir}")
+    print("scaler.pkl")
+    print("models.pkl")
+    print("config.pkl\n")
     # ======================================
     return {
         "model_name": model_name,
-        "model_path": model_path,
+        "model_path": model_dir,
         "scaler_path": scaler_path,
-        "config_path": config_path
+        "config_path": config_path,
+        "metrics": metrics_dict
     }
+
 
 # ====================== 预测 ======================
 def predict_model(df):

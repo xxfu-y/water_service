@@ -39,6 +39,9 @@ message WaterSensorData {
 // 训练请求
 message TrainRequest {
     repeated WaterSensorData data_list = 1;
+    int32 train_steps = 2;        // 训练步长
+    int32 predict_steps = 3;      // 预测步长
+    string model_type = 4;        // 模型类型 LSTM/CatBoost
 }
 
 // 训练响应
@@ -49,9 +52,63 @@ message TrainResponse {
     string model_path = 4;
     string scaler_path = 5;
     string config_path = 6;
+    map<string, ModelMetrics> metrics = 7;
 }
 
+// 模型评估指标
+message ModelMetrics {
+    double rmse = 1;
+    double mae = 2;
+    double r2 = 3;
+}
 // 训练服务
 service WaterTrainService {
     rpc Train(TrainRequest) returns (TrainResponse);
+}
+
+// 模型文件下载请求
+message ModelDownloadRequest {
+    string task_no = 1;
+    string task_name = 2;
+    string model_json = 3;  // 模型的完整JSON信息
+}
+
+// 模型文件下载响应
+message ModelDownloadResponse {
+    bool success = 1;
+    string message = 2;
+    bytes file_content = 3;
+    string file_name = 4;
+    string model_type = 5;
+    string model_version = 6;
+    double r2 = 7;
+    double mae = 8;
+    double rmse = 9;
+}
+
+// 模型文件上传请求
+message ModelUploadRequest {
+    string task_no = 1;
+    string task_name = 2;
+    bytes file_content = 3;
+    string file_name = 4;
+    string model_type = 5;
+    string model_version = 6;
+    double r2 = 7;
+    double mae = 8;
+    double rmse = 9;
+    string model_name = 10;
+}
+
+// 模型文件上传响应
+message ModelUploadResponse {
+    bool success = 1;
+    string message = 2;
+    string model_path = 3;
+}
+
+// 模型管理服务
+service WaterModelService {
+    rpc DownloadModel(ModelDownloadRequest) returns (ModelDownloadResponse);
+    rpc UploadModel(ModelUploadRequest) returns (ModelUploadResponse);
 }
