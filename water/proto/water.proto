@@ -47,6 +47,7 @@ message TrainRequest {
     string start_time = 7;             // 开始时间 (yyyy-MM-dd HH:mm:ss)
     string end_time = 8;               // 结束时间 (yyyy-MM-dd HH:mm:ss)
     int32 sampling_interval = 9;       // 采样间隔(秒)
+    string dataset_name = 10;          // 数据集名称（CSV文件名，可选）
 }
 
 // 训练响应
@@ -141,6 +142,24 @@ message InstanceMonitorStreamResponse {
     string message = 2;
     repeated InstanceMonitorData data_list = 3;  // 多个实例的监控数据
     int64 timestamp = 4;              // 服务端时间戳
+}
+
+// CSV文件上传请求
+message CsvFileUploadRequest {
+    string csv_name = 1;          // CSV文件名（不含路径）
+}
+
+// CSV文件上传响应
+message CsvFileUploadResponse {
+    bool success = 1;
+    string message = 2;
+    int64 file_size = 3;          // 文件大小（字节）
+    int32 row_count = 4;          // 数据行数
+}
+
+// CSV文件服务
+service WaterCsvFileService {
+    rpc UploadCsvFile(CsvFileUploadRequest) returns (CsvFileUploadResponse);
 }
 
 // 实例监控服务

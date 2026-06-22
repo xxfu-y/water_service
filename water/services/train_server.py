@@ -6,6 +6,7 @@ import water.proto.water_pb2_grpc as water_pb2_grpc
 from water.core import water_core
 from water.utils.config import get_grpc_address, get_max_workers
 from water.data.data_query import get_query_service
+from water.data.csv_file_client import CsvFileClient
 
 
 class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
@@ -24,8 +25,51 @@ class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
         print(f"预测步长: {predict_steps} hours")
         print(f"训练步长: {train_steps}")
         
+        # 检查是否提供了 dataset_name（CSV 文件方式）
+        if request.dataset_name:
+            print(f"使用 CSV 文件方式:")
+            print(f"  - 数据集名称: {request.dataset_name}")
+            print(f"  - 目标变量: {request.target_variable}")
+            
+            try:
+                # 通过 WaterCsvFileService 下载并解析 CSV 文件（使用配置文件中的端口）
+                csv_client = CsvFileClient()
+                df = csv_client.download_and_parse_csv(
+                    dataset_name=request.dataset_name,
+                    temp_dir=None,  # 使用系统临时目录
+                    keep_file=False  # 训练后自动删除
+                )
+                
+                if df is None or df.empty:
+                    return water_pb2.TrainResponse(
+                        success=False,
+                        message=f"无法加载数据集: {request.dataset_name}",
+                        model_name="",
+                        model_path="",
+                        scaler_path="",
+                        config_path="",
+                        metrics={}
+                    )
+                
+                print(f"成功加载 CSV 数据: {len(df)} 条记录")
+                
+            except Exception as e:
+                error_msg = f"CSV 文件处理失败: {str(e)}"
+                print(f"[ERROR] {error_msg}")
+                import traceback
+                traceback.print_exc()
+                
+                return water_pb2.TrainResponse(
+                    success=False,
+                    message=error_msg,
+                    model_name="",
+                    model_path="",
+                    scaler_path="",
+                    config_path="",
+                    metrics={}
+                )
         # 检查是否提供了数据标签和时间范围（新的数据查询方式）
-        if request.data_tags and request.start_time and request.end_time:
+        elif request.data_tags and request.start_time and request.end_time:
             print(f"使用数据查询方式:")
             print(f"  - 数据标签: {list(request.data_tags)}")
             print(f"  - 目标变量: {request.target_variable}")
@@ -33,7 +77,7 @@ class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
             print(f"  - 采样间隔: {request.sampling_interval}秒")
             
             try:
-                # 使用数据查询服务获取数据
+                # 使用数据查询服务获取数据（默认使用数据仓库）
                 query_service = get_query_service()
                 df = query_service.query_data(
                     data_tags=list(request.data_tags),
@@ -41,7 +85,7 @@ class WaterTrainServiceServicer(water_pb2_grpc.WaterTrainServiceServicer):
                     start_time=request.start_time,
                     end_time=request.end_time,
                     sampling_interval=request.sampling_interval if request.sampling_interval > 0 else 300,
-                    source_type="database"  # 使用数据库查询
+                    source_type="dw_history"  # 使用数据仓库历史数据服务
                 )
                 
                 if df.empty:

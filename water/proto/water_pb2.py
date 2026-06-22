@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bwater.proto\x12\x05water\"\xfe\x04\n\x0fWaterSensorData\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x11\n\ttimestamp\x18\x02 \x01(\t\x12\x14\n\x0cinflow_rate2\x18\x03 \x01(\x01\x12\x12\n\ninflow_cod\x18\x04 \x01(\x01\x12\x12\n\ninflow_nh3\x18\x05 \x01(\x01\x12\x13\n\x0boutflow_cod\x18\x06 \x01(\x01\x12\x13\n\x0boutflow_nh3\x18\x07 \x01(\x01\x12%\n\x1d\x62io2_front_aeration_flow_meas\x18\x08 \x01(\x01\x12%\n\x1d\x62io2_front_valve_opening_meas\x18\t \x01(\x01\x12#\n\x1b\x62io2_end_aeration_flow_meas\x18\n \x01(\x01\x12#\n\x1b\x62io2_end_valve_opening_meas\x18\x0b \x01(\x01\x12\x1a\n\x12\x62io2_front_do_meas\x18\x0c \x01(\x01\x12\x18\n\x10\x62io2_end_do_meas\x18\r \x01(\x01\x12\x16\n\x0e\x62io2_mlss_meas\x18\x0e \x01(\x01\x12(\n bio2_aeration_pipe_pressure_meas\x18\x0f \x01(\x01\x12\"\n\x1a\x62io2_1_blower_opening_meas\x18\x10 \x01(\x01\x12 \n\x18\x62io2_1_blower_is_running\x18\x11 \x01(\x05\x12#\n\x1b\x62io2_1_blower_pressure_meas\x18\x12 \x01(\x01\x12\"\n\x1a\x62io2_2_blower_opening_meas\x18\x13 \x01(\x01\x12 \n\x18\x62io2_2_blower_is_running\x18\x14 \x01(\x05\x12#\n\x1b\x62io2_2_blower_pressure_meas\x18\x15 \x01(\x01\"\xcf\x01\n\x0cTrainRequest\x12\x13\n\x0btrain_steps\x18\x01 \x01(\x05\x12\x15\n\rpredict_steps\x18\x02 \x01(\x05\x12\x12\n\nmodel_type\x18\x03 \x01(\t\x12\x12\n\nmodel_name\x18\x04 \x01(\t\x12\x11\n\tdata_tags\x18\x05 \x03(\t\x12\x17\n\x0ftarget_variable\x18\x06 \x01(\t\x12\x12\n\nstart_time\x18\x07 \x01(\t\x12\x10\n\x08\x65nd_time\x18\x08 \x01(\t\x12\x19\n\x11sampling_interval\x18\t \x01(\x05\"\xfc\x01\n\rTrainResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nmodel_name\x18\x03 \x01(\t\x12\x12\n\nmodel_path\x18\x04 \x01(\t\x12\x13\n\x0bscaler_path\x18\x05 \x01(\t\x12\x13\n\x0b\x63onfig_path\x18\x06 \x01(\t\x12\x32\n\x07metrics\x18\x07 \x03(\x0b\x32!.water.TrainResponse.MetricsEntry\x1a\x43\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\"\n\x05value\x18\x02 \x01(\x0b\x32\x13.water.ModelMetrics:\x02\x38\x01\"5\n\x0cModelMetrics\x12\x0c\n\x04rmse\x18\x01 \x01(\x01\x12\x0b\n\x03mae\x18\x02 \x01(\x01\x12\n\n\x02r2\x18\x03 \x01(\x01\"N\n\x14ModelDownloadRequest\x12\x0f\n\x07task_no\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x12\n\nmodel_json\x18\x03 \x01(\t\"\xb4\x01\n\x15ModelDownloadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x14\n\x0c\x66ile_content\x18\x03 \x01(\x0c\x12\x11\n\tfile_name\x18\x04 \x01(\t\x12\x12\n\nmodel_type\x18\x05 \x01(\t\x12\x15\n\rmodel_version\x18\x06 \x01(\t\x12\n\n\x02r2\x18\x07 \x01(\x01\x12\x0b\n\x03mae\x18\x08 \x01(\x01\x12\x0c\n\x04rmse\x18\t \x01(\x01\"\xc7\x01\n\x12ModelUploadRequest\x12\x0f\n\x07task_no\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x14\n\x0c\x66ile_content\x18\x03 \x01(\x0c\x12\x11\n\tfile_name\x18\x04 \x01(\t\x12\x12\n\nmodel_type\x18\x05 \x01(\t\x12\x15\n\rmodel_version\x18\x06 \x01(\t\x12\n\n\x02r2\x18\x07 \x01(\x01\x12\x0b\n\x03mae\x18\x08 \x01(\x01\x12\x0c\n\x04rmse\x18\t \x01(\x01\x12\x12\n\nmodel_name\x18\n \x01(\t\"K\n\x13ModelUploadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nmodel_path\x18\x03 \x01(\t\".\n\x16InstanceMonitorRequest\x12\x14\n\x0cinstance_ids\x18\x01 \x03(\x03\"\xb8\x01\n\x13InstanceMonitorData\x12\x13\n\x0binstance_id\x18\x01 \x01(\x03\x12\x15\n\rinstance_name\x18\x02 \x01(\t\x12\x14\n\x0chealth_level\x18\x03 \x01(\t\x12\x0c\n\x04rmse\x18\x04 \x01(\x01\x12\x17\n\x0fpredicted_value\x18\x05 \x01(\x01\x12\x14\n\x0cpredict_time\x18\x06 \x01(\t\x12\x10\n\x08mv_value\x18\x07 \x01(\x01\x12\x10\n\x08\x63v_value\x18\x08 \x01(\x01\"\x83\x01\n\x1dInstanceMonitorStreamResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12-\n\tdata_list\x18\x03 \x03(\x0b\x32\x1a.water.InstanceMonitorData\x12\x11\n\ttimestamp\x18\x04 \x01(\x03\x32G\n\x11WaterTrainService\x12\x32\n\x05Train\x12\x13.water.TrainRequest\x1a\x14.water.TrainResponse2\xa5\x01\n\x11WaterModelService\x12J\n\rDownloadModel\x12\x1b.water.ModelDownloadRequest\x1a\x1c.water.ModelDownloadResponse\x12\x44\n\x0bUploadModel\x12\x19.water.ModelUploadRequest\x1a\x1a.water.ModelUploadResponse2x\n\x1bWaterInstanceMonitorService\x12Y\n\x10MonitorInstances\x12\x1d.water.InstanceMonitorRequest\x1a$.water.InstanceMonitorStreamResponse0\x01\x42\x1e\n\tcom.waterB\x0fWaterOuterClassP\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bwater.proto\x12\x05water\"\xfe\x04\n\x0fWaterSensorData\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x11\n\ttimestamp\x18\x02 \x01(\t\x12\x14\n\x0cinflow_rate2\x18\x03 \x01(\x01\x12\x12\n\ninflow_cod\x18\x04 \x01(\x01\x12\x12\n\ninflow_nh3\x18\x05 \x01(\x01\x12\x13\n\x0boutflow_cod\x18\x06 \x01(\x01\x12\x13\n\x0boutflow_nh3\x18\x07 \x01(\x01\x12%\n\x1d\x62io2_front_aeration_flow_meas\x18\x08 \x01(\x01\x12%\n\x1d\x62io2_front_valve_opening_meas\x18\t \x01(\x01\x12#\n\x1b\x62io2_end_aeration_flow_meas\x18\n \x01(\x01\x12#\n\x1b\x62io2_end_valve_opening_meas\x18\x0b \x01(\x01\x12\x1a\n\x12\x62io2_front_do_meas\x18\x0c \x01(\x01\x12\x18\n\x10\x62io2_end_do_meas\x18\r \x01(\x01\x12\x16\n\x0e\x62io2_mlss_meas\x18\x0e \x01(\x01\x12(\n bio2_aeration_pipe_pressure_meas\x18\x0f \x01(\x01\x12\"\n\x1a\x62io2_1_blower_opening_meas\x18\x10 \x01(\x01\x12 \n\x18\x62io2_1_blower_is_running\x18\x11 \x01(\x05\x12#\n\x1b\x62io2_1_blower_pressure_meas\x18\x12 \x01(\x01\x12\"\n\x1a\x62io2_2_blower_opening_meas\x18\x13 \x01(\x01\x12 \n\x18\x62io2_2_blower_is_running\x18\x14 \x01(\x05\x12#\n\x1b\x62io2_2_blower_pressure_meas\x18\x15 \x01(\x01\"\xe5\x01\n\x0cTrainRequest\x12\x13\n\x0btrain_steps\x18\x01 \x01(\x05\x12\x15\n\rpredict_steps\x18\x02 \x01(\x05\x12\x12\n\nmodel_type\x18\x03 \x01(\t\x12\x12\n\nmodel_name\x18\x04 \x01(\t\x12\x11\n\tdata_tags\x18\x05 \x03(\t\x12\x17\n\x0ftarget_variable\x18\x06 \x01(\t\x12\x12\n\nstart_time\x18\x07 \x01(\t\x12\x10\n\x08\x65nd_time\x18\x08 \x01(\t\x12\x19\n\x11sampling_interval\x18\t \x01(\x05\x12\x14\n\x0c\x64\x61taset_name\x18\n \x01(\t\"\xfc\x01\n\rTrainResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nmodel_name\x18\x03 \x01(\t\x12\x12\n\nmodel_path\x18\x04 \x01(\t\x12\x13\n\x0bscaler_path\x18\x05 \x01(\t\x12\x13\n\x0b\x63onfig_path\x18\x06 \x01(\t\x12\x32\n\x07metrics\x18\x07 \x03(\x0b\x32!.water.TrainResponse.MetricsEntry\x1a\x43\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\"\n\x05value\x18\x02 \x01(\x0b\x32\x13.water.ModelMetrics:\x02\x38\x01\"5\n\x0cModelMetrics\x12\x0c\n\x04rmse\x18\x01 \x01(\x01\x12\x0b\n\x03mae\x18\x02 \x01(\x01\x12\n\n\x02r2\x18\x03 \x01(\x01\"N\n\x14ModelDownloadRequest\x12\x0f\n\x07task_no\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x12\n\nmodel_json\x18\x03 \x01(\t\"\xb4\x01\n\x15ModelDownloadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x14\n\x0c\x66ile_content\x18\x03 \x01(\x0c\x12\x11\n\tfile_name\x18\x04 \x01(\t\x12\x12\n\nmodel_type\x18\x05 \x01(\t\x12\x15\n\rmodel_version\x18\x06 \x01(\t\x12\n\n\x02r2\x18\x07 \x01(\x01\x12\x0b\n\x03mae\x18\x08 \x01(\x01\x12\x0c\n\x04rmse\x18\t \x01(\x01\"\xc7\x01\n\x12ModelUploadRequest\x12\x0f\n\x07task_no\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x14\n\x0c\x66ile_content\x18\x03 \x01(\x0c\x12\x11\n\tfile_name\x18\x04 \x01(\t\x12\x12\n\nmodel_type\x18\x05 \x01(\t\x12\x15\n\rmodel_version\x18\x06 \x01(\t\x12\n\n\x02r2\x18\x07 \x01(\x01\x12\x0b\n\x03mae\x18\x08 \x01(\x01\x12\x0c\n\x04rmse\x18\t \x01(\x01\x12\x12\n\nmodel_name\x18\n \x01(\t\"K\n\x13ModelUploadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nmodel_path\x18\x03 \x01(\t\".\n\x16InstanceMonitorRequest\x12\x14\n\x0cinstance_ids\x18\x01 \x03(\x03\"\xb8\x01\n\x13InstanceMonitorData\x12\x13\n\x0binstance_id\x18\x01 \x01(\x03\x12\x15\n\rinstance_name\x18\x02 \x01(\t\x12\x14\n\x0chealth_level\x18\x03 \x01(\t\x12\x0c\n\x04rmse\x18\x04 \x01(\x01\x12\x17\n\x0fpredicted_value\x18\x05 \x01(\x01\x12\x14\n\x0cpredict_time\x18\x06 \x01(\t\x12\x10\n\x08mv_value\x18\x07 \x01(\x01\x12\x10\n\x08\x63v_value\x18\x08 \x01(\x01\"\x83\x01\n\x1dInstanceMonitorStreamResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12-\n\tdata_list\x18\x03 \x03(\x0b\x32\x1a.water.InstanceMonitorData\x12\x11\n\ttimestamp\x18\x04 \x01(\x03\"(\n\x14\x43svFileUploadRequest\x12\x10\n\x08\x63sv_name\x18\x01 \x01(\t\"_\n\x15\x43svFileUploadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tfile_size\x18\x03 \x01(\x03\x12\x11\n\trow_count\x18\x04 \x01(\x05\x32G\n\x11WaterTrainService\x12\x32\n\x05Train\x12\x13.water.TrainRequest\x1a\x14.water.TrainResponse2\xa5\x01\n\x11WaterModelService\x12J\n\rDownloadModel\x12\x1b.water.ModelDownloadRequest\x1a\x1c.water.ModelDownloadResponse\x12\x44\n\x0bUploadModel\x12\x19.water.ModelUploadRequest\x1a\x1a.water.ModelUploadResponse2a\n\x13WaterCsvFileService\x12J\n\rUploadCsvFile\x12\x1b.water.CsvFileUploadRequest\x1a\x1c.water.CsvFileUploadResponse2x\n\x1bWaterInstanceMonitorService\x12Y\n\x10MonitorInstances\x12\x1d.water.InstanceMonitorRequest\x1a$.water.InstanceMonitorStreamResponse0\x01\x42\x1e\n\tcom.waterB\x0fWaterOuterClassP\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -37,31 +37,37 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_WATERSENSORDATA']._serialized_start=23
   _globals['_WATERSENSORDATA']._serialized_end=661
   _globals['_TRAINREQUEST']._serialized_start=664
-  _globals['_TRAINREQUEST']._serialized_end=871
-  _globals['_TRAINRESPONSE']._serialized_start=874
-  _globals['_TRAINRESPONSE']._serialized_end=1126
-  _globals['_TRAINRESPONSE_METRICSENTRY']._serialized_start=1059
-  _globals['_TRAINRESPONSE_METRICSENTRY']._serialized_end=1126
-  _globals['_MODELMETRICS']._serialized_start=1128
-  _globals['_MODELMETRICS']._serialized_end=1181
-  _globals['_MODELDOWNLOADREQUEST']._serialized_start=1183
-  _globals['_MODELDOWNLOADREQUEST']._serialized_end=1261
-  _globals['_MODELDOWNLOADRESPONSE']._serialized_start=1264
-  _globals['_MODELDOWNLOADRESPONSE']._serialized_end=1444
-  _globals['_MODELUPLOADREQUEST']._serialized_start=1447
-  _globals['_MODELUPLOADREQUEST']._serialized_end=1646
-  _globals['_MODELUPLOADRESPONSE']._serialized_start=1648
-  _globals['_MODELUPLOADRESPONSE']._serialized_end=1723
-  _globals['_INSTANCEMONITORREQUEST']._serialized_start=1725
-  _globals['_INSTANCEMONITORREQUEST']._serialized_end=1771
-  _globals['_INSTANCEMONITORDATA']._serialized_start=1774
-  _globals['_INSTANCEMONITORDATA']._serialized_end=1958
-  _globals['_INSTANCEMONITORSTREAMRESPONSE']._serialized_start=1961
-  _globals['_INSTANCEMONITORSTREAMRESPONSE']._serialized_end=2092
-  _globals['_WATERTRAINSERVICE']._serialized_start=2094
-  _globals['_WATERTRAINSERVICE']._serialized_end=2165
-  _globals['_WATERMODELSERVICE']._serialized_start=2168
-  _globals['_WATERMODELSERVICE']._serialized_end=2333
-  _globals['_WATERINSTANCEMONITORSERVICE']._serialized_start=2335
-  _globals['_WATERINSTANCEMONITORSERVICE']._serialized_end=2455
+  _globals['_TRAINREQUEST']._serialized_end=893
+  _globals['_TRAINRESPONSE']._serialized_start=896
+  _globals['_TRAINRESPONSE']._serialized_end=1148
+  _globals['_TRAINRESPONSE_METRICSENTRY']._serialized_start=1081
+  _globals['_TRAINRESPONSE_METRICSENTRY']._serialized_end=1148
+  _globals['_MODELMETRICS']._serialized_start=1150
+  _globals['_MODELMETRICS']._serialized_end=1203
+  _globals['_MODELDOWNLOADREQUEST']._serialized_start=1205
+  _globals['_MODELDOWNLOADREQUEST']._serialized_end=1283
+  _globals['_MODELDOWNLOADRESPONSE']._serialized_start=1286
+  _globals['_MODELDOWNLOADRESPONSE']._serialized_end=1466
+  _globals['_MODELUPLOADREQUEST']._serialized_start=1469
+  _globals['_MODELUPLOADREQUEST']._serialized_end=1668
+  _globals['_MODELUPLOADRESPONSE']._serialized_start=1670
+  _globals['_MODELUPLOADRESPONSE']._serialized_end=1745
+  _globals['_INSTANCEMONITORREQUEST']._serialized_start=1747
+  _globals['_INSTANCEMONITORREQUEST']._serialized_end=1793
+  _globals['_INSTANCEMONITORDATA']._serialized_start=1796
+  _globals['_INSTANCEMONITORDATA']._serialized_end=1980
+  _globals['_INSTANCEMONITORSTREAMRESPONSE']._serialized_start=1983
+  _globals['_INSTANCEMONITORSTREAMRESPONSE']._serialized_end=2114
+  _globals['_CSVFILEUPLOADREQUEST']._serialized_start=2116
+  _globals['_CSVFILEUPLOADREQUEST']._serialized_end=2156
+  _globals['_CSVFILEUPLOADRESPONSE']._serialized_start=2158
+  _globals['_CSVFILEUPLOADRESPONSE']._serialized_end=2253
+  _globals['_WATERTRAINSERVICE']._serialized_start=2255
+  _globals['_WATERTRAINSERVICE']._serialized_end=2326
+  _globals['_WATERMODELSERVICE']._serialized_start=2329
+  _globals['_WATERMODELSERVICE']._serialized_end=2494
+  _globals['_WATERCSVFILESERVICE']._serialized_start=2496
+  _globals['_WATERCSVFILESERVICE']._serialized_end=2593
+  _globals['_WATERINSTANCEMONITORSERVICE']._serialized_start=2595
+  _globals['_WATERINSTANCEMONITORSERVICE']._serialized_end=2715
 # @@protoc_insertion_point(module_scope)

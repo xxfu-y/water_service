@@ -2,13 +2,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 import warnings
-import sys
-import os
 
-# 添加父目录到路径（使能正确导入 water_pb2）
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-import proto.water_pb2 as water__pb2
+import water_pb2 as water__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -212,6 +207,81 @@ class WaterModelService(object):
             '/water.WaterModelService/UploadModel',
             water__pb2.ModelUploadRequest.SerializeToString,
             water__pb2.ModelUploadResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class WaterCsvFileServiceStub(object):
+    """CSV文件服务
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.UploadCsvFile = channel.unary_unary(
+                '/water.WaterCsvFileService/UploadCsvFile',
+                request_serializer=water__pb2.CsvFileUploadRequest.SerializeToString,
+                response_deserializer=water__pb2.CsvFileUploadResponse.FromString,
+                _registered_method=True)
+
+
+class WaterCsvFileServiceServicer(object):
+    """CSV文件服务
+    """
+
+    def UploadCsvFile(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_WaterCsvFileServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'UploadCsvFile': grpc.unary_unary_rpc_method_handler(
+                    servicer.UploadCsvFile,
+                    request_deserializer=water__pb2.CsvFileUploadRequest.FromString,
+                    response_serializer=water__pb2.CsvFileUploadResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'water.WaterCsvFileService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('water.WaterCsvFileService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class WaterCsvFileService(object):
+    """CSV文件服务
+    """
+
+    @staticmethod
+    def UploadCsvFile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/water.WaterCsvFileService/UploadCsvFile',
+            water__pb2.CsvFileUploadRequest.SerializeToString,
+            water__pb2.CsvFileUploadResponse.FromString,
             options,
             channel_credentials,
             insecure,

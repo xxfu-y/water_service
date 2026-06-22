@@ -32,6 +32,7 @@ class DataQueryService:
         self.data_sources["api"] = self._query_from_api
         self.data_sources["file"] = self._query_from_file
         self.data_sources["mock"] = self._query_mock_data
+        self.data_sources["dw_history"] = self._query_from_dw_history
     
     def query_data(self, 
                    data_tags: List[str],
@@ -372,6 +373,87 @@ class DataQueryService:
         
         print(f"[DataQuery] 生成 {len(df)} 条模拟数据")
         return df
+    
+    def _query_from_dw_history(self,
+                              data_tags: List[str],
+                              target_variable: str,
+                              start_time: str,
+                              end_time: str,
+                              sampling_interval: int) -> pd.DataFrame:
+        """
+        从数据仓库历史数据服务查询数据
+        
+        Args:
+            data_tags: 数据标签列表
+            target_variable: 目标变量
+            start_time: 开始时间
+            end_time: 结束时间
+            sampling_interval: 采样间隔（秒）
+            
+        Returns:
+            DataFrame: 查询到的数据
+        """
+        print("[DataQuery] 从数据仓库历史数据服务查询数据...")
+        
+        try:
+            # 导入数据仓库客户端
+            from water.data.dw_history_client import DwHistoryClient
+            from water.utils.config import get_external_service_address
+            
+            # 获取数据仓库服务地址
+            dw_address = get_external_service_address("dw_history_service")
+            
+            # 将采样间隔转换为聚合间隔
+            if sampling_interval <= 60:
+                interval = f"{sampling_interval}s"
+            elif sampling_interval <= 3600:
+                minutes = sampling_interval // 60
+                interval = f"{minutes}m"
+            else:
+                hours = sampling_interval // 3600
+                interval = f"{hours}h"
+            
+            print(f"[DataQuery] 连接数据仓库服务: {dw_address}")
+            print(f"[DataQuery] 聚合间隔: {interval}")
+            
+            # 创建客户端并查询
+            client = DwHistoryClient(server_address=dw_address)
+            
+            # 如果目标变量不在标签中，添加到标签列表
+            tags = list(data_tags)
+            if target_variable and target_variable not in tags:
+                tags.append(target_variable)
+            
+            # 执行查询
+            df = client.query_history(
+                tags=tags,
+                start_time=start_time,
+                end_time=end_time,
+                interval=interval,
+                batch_size=5000
+            )
+            
+            if df is None or df.empty:
+                print("[DataQuery WARNING] 数据仓库查询结果为空")
+                return pd.DataFrame()
+            
+            print(f"[DataQuery] 数据仓库查询成功，获取 {len(df)} 条记录")
+            
+            # 确保 timestamp 是 datetime 类型
+            if 'timestamp' in df.columns:
+                df['timestamp'] = pd.to_datetime(df['timestamp'])
+            
+            return df
+            
+        except ImportError as e:
+            print(f"[DataQuery ERROR] 缺少必要的模块: {e}")
+            print("请确保已编译数据仓库 proto 文件")
+            raise
+        except Exception as e:
+            print(f"[DataQuery ERROR] 数据仓库查询失败: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
     
     def register_custom_source(self, name: str, query_func):
         """
