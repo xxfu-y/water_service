@@ -38,10 +38,15 @@ message WaterSensorData {
 
 // 训练请求
 message TrainRequest {
-    repeated WaterSensorData data_list = 1;
-    int32 train_steps = 2;        // 训练步长
-    int32 predict_steps = 3;      // 预测步长
-    string model_type = 4;        // 模型类型 LSTM/CatBoost
+    int32 train_steps = 1;        // 训练步长
+    int32 predict_steps = 2;      // 预测步长
+    string model_type = 3;        // 模型类型 LSTM/CatBoost
+    string model_name = 4;        // 模型名称
+    repeated string data_tags = 5;     // 数据标签列表
+    string target_variable = 6;        // 目标变量
+    string start_time = 7;             // 开始时间 (yyyy-MM-dd HH:mm:ss)
+    string end_time = 8;               // 结束时间 (yyyy-MM-dd HH:mm:ss)
+    int32 sampling_interval = 9;       // 采样间隔(秒)
 }
 
 // 训练响应
@@ -111,4 +116,35 @@ message ModelUploadResponse {
 service WaterModelService {
     rpc DownloadModel(ModelDownloadRequest) returns (ModelDownloadResponse);
     rpc UploadModel(ModelUploadRequest) returns (ModelUploadResponse);
+}
+
+// 实例监控数据请求
+message InstanceMonitorRequest {
+    repeated int64 instance_ids = 1;  // 实例ID列表
+}
+
+// 实例监控数据响应
+message InstanceMonitorData {
+    int64 instance_id = 1;            // 实例ID
+    string instance_name = 2;         // 实例名称
+    string health_level = 3;          // 健康度等级（GOOD/NORMAL/POOR/NONE）
+    double rmse = 4;                  // RMSE评估指标
+    double predicted_value = 5;       // 预测值
+    string predict_time = 6;          // 预测时间（ISO 8601格式）
+    double mv_value = 7;              // 计算值MV
+    double cv_value = 8;              // 目标值CV
+}
+
+// 实例监控流式响应
+message InstanceMonitorStreamResponse {
+    bool success = 1;
+    string message = 2;
+    repeated InstanceMonitorData data_list = 3;  // 多个实例的监控数据
+    int64 timestamp = 4;              // 服务端时间戳
+}
+
+// 实例监控服务
+service WaterInstanceMonitorService {
+    // 流式推送实例监控数据
+    rpc MonitorInstances(InstanceMonitorRequest) returns (stream InstanceMonitorStreamResponse);
 }

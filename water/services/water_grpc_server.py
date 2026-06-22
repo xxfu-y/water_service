@@ -1,17 +1,18 @@
-import grpc
 import pandas as pd
 import numpy as np
 import joblib
 import warnings
 from concurrent import futures
+import grpc
 from catboost import CatBoostRegressor
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 
 # 自动生成的 gRPC 代码
-import water_pb2
-import water_pb2_grpc
+import water.proto.water_pb2 as water_pb2
+import water.proto.water_pb2_grpc as water_pb2_grpc
+from water.utils.config import get_grpc_address, get_max_workers
 
 # ====================== 全局配置（不变） ======================
 SEED = 42
@@ -206,12 +207,14 @@ class WaterService(water_pb2_grpc.WaterServiceServicer):
 
 # ====================== 启动 ======================
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
+    max_workers = get_max_workers("train_service")
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers))
     water_pb2_grpc.add_WaterServiceServicer_to_server(WaterService(), server)
-    server.add_insecure_port("[::]:50051")
+    address = get_grpc_address("train_service")
+    server.add_insecure_port(address)
     server.start()
-    print("✅ gRPC 服务已启动：50051")
-    print("✅ 数据全部来自 gRPC，不读取任何本地 CSV！")
+    print(f"gRPC 服务已启动：{address}")
+    print("数据全部来自 gRPC，不读取任何本地 CSV！")
     import time
     while True:
         time.sleep(3600)

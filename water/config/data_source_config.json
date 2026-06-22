@@ -1,0 +1,20 @@
+{
+  "default_source": "database",
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "water_db",
+    "username": "root",
+    "password": "123456",
+    "charset": "utf8mb4"
+  },
+  "api": {
+    "url": "http://scada-server/api/sensor-data",
+    "api_key": "your-api-key",
+    "timeout": 5
+  },
+  "file": {
+    "type": "csv",
+    "path": "/data/sensor_data.csv"
+  }
+}

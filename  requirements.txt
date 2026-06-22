@@ -1,0 +1,19 @@
+# requirements.txt - water_service 项目依赖
+
+# gRPC 相关
+grpcio>=1.50.0
+grpcio-tools>=1.50.0
+
+# 数据处理
+pandas>=1.5.0
+numpy>=1.23.0
+
+# 机器学习
+catboost>=1.0.0
+xgboost>=1.7.0
+lightgbm>=3.3.0
+scikit-learn>=1.0.0
+joblib>=1.2.0
+
+# 其他工具
+protobuf>=4.21.0

@@ -2,8 +2,13 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 import warnings
+import sys
+import os
 
-import water_pb2 as water__pb2
+# 添加父目录到路径（使能正确导入 water_pb2）
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import proto.water_pb2 as water__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -207,6 +212,82 @@ class WaterModelService(object):
             '/water.WaterModelService/UploadModel',
             water__pb2.ModelUploadRequest.SerializeToString,
             water__pb2.ModelUploadResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class WaterInstanceMonitorServiceStub(object):
+    """实例监控服务
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.MonitorInstances = channel.unary_stream(
+                '/water.WaterInstanceMonitorService/MonitorInstances',
+                request_serializer=water__pb2.InstanceMonitorRequest.SerializeToString,
+                response_deserializer=water__pb2.InstanceMonitorStreamResponse.FromString,
+                _registered_method=True)
+
+
+class WaterInstanceMonitorServiceServicer(object):
+    """实例监控服务
+    """
+
+    def MonitorInstances(self, request, context):
+        """流式推送实例监控数据
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_WaterInstanceMonitorServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'MonitorInstances': grpc.unary_stream_rpc_method_handler(
+                    servicer.MonitorInstances,
+                    request_deserializer=water__pb2.InstanceMonitorRequest.FromString,
+                    response_serializer=water__pb2.InstanceMonitorStreamResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'water.WaterInstanceMonitorService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('water.WaterInstanceMonitorService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class WaterInstanceMonitorService(object):
+    """实例监控服务
+    """
+
+    @staticmethod
+    def MonitorInstances(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/water.WaterInstanceMonitorService/MonitorInstances',
+            water__pb2.InstanceMonitorRequest.SerializeToString,
+            water__pb2.InstanceMonitorStreamResponse.FromString,
             options,
             channel_credentials,
             insecure,
